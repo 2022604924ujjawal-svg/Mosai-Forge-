@@ -9,12 +9,7 @@
   across projects, sessions, and providers.
 </p>
 
-<p align="center">
-  <a href="https://www.npmjs.com/package/clay-server"><img src="https://img.shields.io/npm/v/clay-server" alt="npm version" /></a>
-  <a href="https://www.npmjs.com/package/clay-server"><img src="https://img.shields.io/npm/dw/clay-server" alt="npm downloads" /></a>
-  <a href="https://github.com/chadbyte/clay"><img src="https://img.shields.io/github/stars/chadbyte/clay" alt="GitHub stars" /></a>
-  <a href="https://github.com/chadbyte/clay/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT" /></a>
-</p>
+
 
 Mosai Forge  turns local coding agents into a shared, persistent team. Run different agents from one browser workspace, join a teammate's live session, keep project knowledge between conversations, and automate work without handing your workspace to another cloud.
 
