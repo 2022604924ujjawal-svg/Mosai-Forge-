@@ -1,4 +1,6 @@
-
+<p align="center">
+  <img src="lib/public/task.png" alt="Mosai Forge" />
+</p>
 
 <h2 align="center">Where minds work together.</h2>
 
