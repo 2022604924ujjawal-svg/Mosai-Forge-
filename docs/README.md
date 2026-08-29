@@ -1,11 +1,8 @@
 ## Dashboard
 
-Mosai Forge provides a focused workspace for managing projects, sessions, AI workers, tools, and ongoing tasks from one place.
-
 <p align="center">
-  <img src="lib/public/Screenshot 2026-08-29 213548.png" width="100%" alt="Mosai Forge dashboard" />
+  <img src="../lib/public/Screenshot%202026-08-29%20213548.png" width="900" alt="Mosai Forge Dashboard" />
 </p>
-
 <h2 align="center">Where minds work together.</h2>
 
 <p align="center">
