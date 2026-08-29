@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="lib/public/icon-192.png" width="120" alt="Mosai Forge  symbol" /><br>
+  
   <img src="lib/public/ujju.png" width="280" alt="Mosai Forge " />
 </p>
 
