@@ -1,0 +1,465 @@
+/* Pane-mode app instances and the parent split shell. */
+
+body.pane-mode #top-bar,
+body.pane-mode #icon-strip,
+body.pane-mode #sidebar-column,
+body.pane-mode #mate-sidebar-column,
+body.pane-mode #sidebar-resize-handle,
+body.pane-mode #mate-sidebar-resize-handle,
+body.pane-mode #sidebar-overlay,
+body.pane-mode #home-hub,
+body.pane-mode #whats-new-article,
+body.pane-mode .title-bar-content,
+body.pane-mode .dm-header-bar,
+body.pane-mode #mobile-tab-bar,
+body.pane-mode #mobile-sheet,
+body.pane-mode #user-island {
+  display: none !important;
+}
+
+/* Sticky notes are project-wide. The parent split shell renders one shared
+   canvas across the full group instead of duplicating it in each iframe. */
+body.pane-mode #sticky-notes-container {
+  display: none !important;
+}
+
+body.pane-mode #file-viewer { display: none !important; }
+
+body.pane-mode #connect-overlay { background: var(--bg); }
+body.pane-mode #connect-overlay-msg { color: var(--text-dimmer); }
+
+body.pane-mode .notif-banner-container {
+  display: none !important;
+}
+
+body.pane-mode #main-area {
+  border: 0;
+  border-radius: 0;
+}
+
+body.pane-mode #main-column,
+body.pane-mode #main-panels,
+body.pane-mode #app {
+  width: 100%;
+  height: 100%;
+}
+
+/* Narrow panes cross the mobile breakpoint, but pane mode hides the mobile
+   tab bar. Keep the normal composer inset instead of reserving its 56px. */
+body.pane-mode #input-area {
+  padding-bottom: calc(var(--safe-bottom) + 8px);
+}
+
+#main-panels {
+  position: relative;
+}
+
+#app.split-native-hidden {
+  display: none !important;
+}
+
+#split-host {
+  display: none;
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  background: var(--bg);
+}
+
+#split-host.visible {
+  display: flex;
+}
+
+.split-pane {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  border-left: 1px solid var(--border-subtle);
+  background: var(--bg);
+}
+
+.split-pane:first-child {
+  border-left: 0;
+}
+
+.split-pane-header {
+  height: 24px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 5px 0 9px;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg);
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.split-pane-vendor {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.split-pane-title {
+  flex: 0 1 auto;
+  max-width: 46%;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: text;
+  border-radius: 4px;
+  padding: 1px 4px;
+  margin-left: -4px;
+}
+
+.split-pane-title:hover {
+  background: var(--bg-alt);
+}
+
+.split-pair-role,
+.split-pair-live {
+  flex-shrink: 0;
+  border-radius: 999px;
+  padding: 1px 6px;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.split-pair-role-driver { color: var(--accent); background: color-mix(in srgb, var(--accent) 13%, transparent); }
+.split-pair-role-worker { color: var(--text-secondary); background: var(--bg-alt); }
+
+/* Pair roles are status labels. Control remains with the Driver through MCP. */
+
+/* Ad-hoc splits: role assignment in each pane header. ALWAYS fully
+   visible; hover/opacity gating made the control undiscoverable. */
+.split-pair-set-driver {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 2px 9px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  background: var(--bg-alt);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color 0.12s, border-color 0.12s, background 0.12s;
+  font-family: inherit;
+}
+.split-pair-set-driver:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, var(--bg));
+}
+.split-pair-live { color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, transparent); animation: pair-status-pulse 1.5s ease-in-out infinite; }
+
+#split-host.split-delegating::after {
+  content: "→";
+  position: absolute;
+  z-index: 4;
+  top: calc(50% - 10px);
+  left: calc(50% - 17px);
+  width: 34px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border));
+  border-radius: 999px;
+  pointer-events: none;
+  background: var(--sidebar-bg);
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 800;
+  animation: pair-divider-flow 1.1s ease-in-out infinite;
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--accent) 65%, transparent));
+}
+
+#split-host.split-direction-left::after { content: "←"; animation-name: pair-divider-flow-left; }
+
+@keyframes pair-divider-flow { 0%, 100% { transform: translateX(-3px); opacity: 0.65; } 50% { transform: translateX(3px); opacity: 1; } }
+@keyframes pair-divider-flow-left { 0%, 100% { transform: translateX(3px); opacity: 0.65; } 50% { transform: translateX(-3px); opacity: 1; } }
+@keyframes pair-status-pulse { 50% { opacity: 0.55; } }
+
+/* Worker-pane composer notice: shown while this pane's session processes a
+   delegated turn. Informational only -- the composer stays enabled. */
+.pane-delegation-notice {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  max-width: var(--content-width);
+  margin: 0 auto;
+  padding: 4px 10px;
+  border-radius: 8px 8px 0 0;
+  background: color-mix(in srgb, var(--accent) 8%, var(--bg));
+  color: var(--text-secondary);
+  font-size: 11px;
+  line-height: 1.4;
+  transition: box-shadow 0.2s;
+}
+.pane-delegation-notice.visible { display: flex; }
+.pane-delegation-notice.visible:has(+ #input-wrapper #input-row:focus-within) {
+  box-shadow: 0 0 0 1px var(--border);
+  clip-path: inset(-1px -1px 0 -1px);
+}
+.pane-delegation-notice.visible + #input-wrapper #input-row {
+  border-radius: 0 0 8px 8px;
+}
+.pane-delegation-notice::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+  animation: pair-status-pulse 1.5s ease-in-out infinite;
+}
+
+/* Pair dialog rides the standard wt-modal pattern; these classes only add
+   the two-column role layout on top of it. */
+.pair-modal { min-width: 480px; max-width: 560px; }
+.pair-modal-desc { font-size: 12px; color: var(--text-dimmer); margin: -10px 0 14px; }
+.pair-modal-roles { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.pair-modal-role { min-width: 0; }
+.pair-modal-role-heading { display: flex; align-items: center; gap: 9px; margin-bottom: 10px; }
+.pair-modal-role-heading div { display: grid; gap: 1px; }
+.pair-modal-role-heading strong { color: var(--text); font-size: 12px; }
+.pair-modal-role-heading span { color: var(--text-dimmer); font-size: 10px; }
+@media (max-width: 560px) {
+  .pair-modal { min-width: 0; width: calc(100vw - 32px); }
+  .pair-modal-roles { grid-template-columns: 1fr; }
+}
+.pair-modal-current {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  background: var(--bg-alt);
+  font-size: 13px;
+  font-weight: 600;
+  overflow: hidden;
+}
+.pair-modal-current span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.pair-role-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--text-dimmer); box-shadow: 0 0 0 4px color-mix(in srgb, var(--text-dimmer) 12%, transparent); flex-shrink: 0; }
+.pair-role-driver { background: var(--accent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 14%, transparent); }
+
+.split-pane-rename-input {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 1px 4px;
+  margin-left: -4px;
+  outline: none;
+}
+
+.split-pane-context {
+  display: none;
+  align-items: center;
+  gap: 4px;
+  border: 0;
+  padding: 2px 5px;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-dimmer);
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.split-pane-context.has-data {
+  display: inline-flex;
+}
+
+.split-pane-context:not(.has-data) + .split-pane-close {
+  margin-left: auto;
+}
+
+.split-pane-context:hover {
+  background: var(--bg-alt);
+  color: var(--text);
+}
+
+.split-pane-context-bar {
+  width: 36px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--border);
+  overflow: hidden;
+}
+
+.split-pane-context-fill {
+  display: block;
+  height: 100%;
+  width: 0%;
+  border-radius: 2px;
+  background: var(--accent);
+  transition: width 0.3s ease, background 0.3s ease;
+}
+
+.split-pane-context-fill.warn { background: var(--warning); }
+.split-pane-context-fill.danger { background: var(--error); }
+
+.split-pane-context-label {
+  font-family: "Roboto Mono", monospace;
+  font-size: 10px;
+  line-height: 1;
+}
+
+/* Header-scoped (two-class) selectors: pane.css loads BEFORE menus.css in
+   style.css, so the base .session-full-access rules would win a specificity
+   tie and keep the pill at its 22px title-bar size inside the 24px pane
+   header. Scope under .split-pane-header to outrank them. */
+.split-pane-header .split-pane-full-access {
+  height: 15px;
+  align-self: center;
+  margin-left: 0;
+  padding: 0 3px 0 7px;
+  gap: 5px;
+  font-size: 8px;
+  letter-spacing: 0.02em;
+}
+
+.split-pane-header .session-full-access-track {
+  width: 16px;
+  height: 9px;
+}
+
+.split-pane-header .session-full-access-track > span {
+  top: 1.5px;
+  left: 1.5px;
+  width: 6px;
+  height: 6px;
+}
+
+.split-pane-header .split-pane-full-access.active .session-full-access-track > span { transform: translateX(7px); }
+
+@media (max-width: 900px) {
+  .split-pane-header .session-full-access-label { display: none; }
+  .split-pane-header .split-pane-full-access { padding-left: 3px; }
+}
+
+.split-pane-close {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-dimmer);
+  cursor: pointer;
+}
+
+.split-pane-close:hover {
+  background: var(--bg-alt);
+  color: var(--text);
+}
+
+.split-pane-close svg {
+  width: 12px;
+  height: 12px;
+}
+
+.split-pane-frame {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  border: 0;
+  background: var(--bg);
+}
+
+/* Prevent an iframe from taking the pointer midway through a note gesture. */
+body.sticky-note-interacting .split-pane-frame {
+  pointer-events: none;
+}
+
+/* Arc-style drop preview: while a session is dragged over the app, hovering
+   one half folds the live app into the other half and a ghost pane marks
+   exactly where the dragged session will land. Drop keeps that layout, so
+   the preview and the result match 1:1. */
+
+.split-drop-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10050;
+  display: none;
+  background: rgba(var(--overlay-rgb), 0.05);
+  pointer-events: none;
+}
+
+.split-drop-overlay.visible {
+  display: block;
+  pointer-events: auto;
+}
+
+#main-panels.split-drag-active #app {
+  transition: margin 0.18s ease;
+}
+
+#main-panels.split-preview-left #app {
+  margin-left: 50%;
+}
+
+#main-panels.split-preview-right #app {
+  margin-right: 50%;
+}
+
+.split-drop-ghost {
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  left: 10px;
+  width: calc(50% - 16px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed var(--accent);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--accent) 10%, var(--bg));
+  color: var(--text);
+  opacity: 0;
+  pointer-events: none;
+  transition: left 0.18s ease, opacity 0.12s ease;
+}
+
+#main-panels.split-preview-left .split-drop-ghost {
+  opacity: 1;
+}
+
+#main-panels.split-preview-right .split-drop-ghost {
+  left: calc(50% + 6px);
+  opacity: 1;
+}
+
+.split-drop-ghost-title {
+  max-width: 80%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 700;
+}

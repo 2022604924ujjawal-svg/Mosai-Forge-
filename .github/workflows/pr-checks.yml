@@ -1,0 +1,88 @@
+name: PR Checks
+
+# These checks run on fork PRs, so they must never need secrets.
+#
+# We use `pull_request` (not `pull_request_target`) deliberately. For
+# `pull_request`, GitHub reads the workflow from the merge ref (PR head merged
+# into base), so a PR that branched before this workflow existed still gets
+# checked, and the fork's code runs with no secrets and a read-only token.
+# `pull_request_target` would hand fork code the base repo's secrets and token,
+# which is why actions/checkout now refuses to check out fork code there
+# (`allow-unsafe-pr-checkout`). Do not opt back into that flag: keep this
+# workflow secret-free instead.
+#
+# Keep it that way. In particular, never add `npm install`/`npm ci` here (it
+# would execute a fork's install scripts) and never reference `secrets.*`.
+# The checks only need the standard library: `node --check` (parse, no execute)
+# and a pure-stdlib reader script (scripts/check-client-imports.js).
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout merge ref (or pushed ref)
+        uses: actions/checkout@v4
+        with:
+          # Default for `pull_request` is the merge ref, which is what we want:
+          # it checks the code as it would land on main, not the head in
+          # isolation. On push events this falls back to the pushed commit.
+          # Need history so we can fetch and read files from main below.
+          fetch-depth: 0
+
+      - name: Restore trusted check tooling from base
+        # Defends against a PR replacing scripts/check-client-imports.js with a
+        # no-op: we always run the version from main. (The merge ref already
+        # carries main's copy for PRs that predate the script, so this is now
+        # only about the tamper case.)
+        if: github.event_name == 'pull_request'
+        run: |
+          git fetch origin main --depth=1
+          git checkout origin/main -- scripts/check-client-imports.js
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # No npm install — checks only need the standard library.
+
+      - name: Verify client ES module imports resolve
+        run: node scripts/check-client-imports.js
+
+      - name: Syntax check server-side JS (CommonJS)
+        run: |
+          # Server-side .js is CommonJS in this project (no "type" in
+          # package.json). `node --check` parses without executing.
+          # Excludes lib/public (client ES modules — different parse mode,
+          # covered by the import-resolution check above).
+          set -e
+          fail=0
+          while IFS= read -r f; do
+            if ! node --check "$f"; then
+              echo "Syntax error in: $f" >&2
+              fail=1
+            fi
+          done < <(find bin lib -name '*.js' -not -path 'lib/public/*')
+          exit $fail
+
+      - name: Syntax check client-side JS (ES modules)
+        run: |
+          set -e
+          fail=0
+          while IFS= read -r f; do
+            if ! node --check --input-type=module < "$f" >/dev/null 2>&1; then
+              # Re-run without redirect to surface the error.
+              echo "Syntax error in: $f" >&2
+              node --check --input-type=module < "$f" || true
+              fail=1
+            fi
+          done < <(find lib/public -name '*.js')
+          exit $fail

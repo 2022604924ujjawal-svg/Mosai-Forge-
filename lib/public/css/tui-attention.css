@@ -1,0 +1,685 @@
+/* Subtle 1px divider against the sidebar so the embedded terminal
+   doesn't visually bleed into the session list. The host is
+   position:fixed and anchored to #messages' bounding rect, so its
+   left edge sits exactly on the sidebar boundary. Color matches
+   #main-area's existing border-left so the line reads as one
+   continuous edge with the rest of the chrome. */
+#tui-session-host {
+  border-left: 1px solid var(--border-subtle);
+}
+
+/* Lazy-resume bar: shown in place of the composer when a born-TUI session is
+   displayed read-only (no live PTY). Clicking Resume spawns claude --resume.
+   Toggled by body.tui-suspended (set in session-tui-view.js). */
+#tui-resume-bar { display: none; }
+body.tui-suspended #input-area { display: none !important; }
+body.tui-suspended #tui-resume-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 14px 16px;
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 14px);
+  border-top: 1px solid var(--border);
+  background: var(--bg-alt);
+}
+.tui-resume-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 18px;
+  border: none;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.tui-resume-btn:hover { filter: brightness(1.08); }
+.tui-resume-btn:active { filter: brightness(0.95); }
+.tui-resume-btn .lucide { width: 16px; height: 16px; }
+.tui-resume-hint {
+  font-size: 12px;
+  color: var(--text-dimmer);
+}
+@media (max-width: 768px) {
+  .tui-resume-hint { display: none; }
+}
+
+/* Policy info modal. Themed via CSS vars so it follows light/dark.
+   The modal itself is gone; .tui-policy-modal-* rules stay because
+   What's New article bodies (lib/whats-new-content.js) still use the
+   -links class for their footer links. */
+.tui-policy-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9600;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.tui-policy-modal-backdrop.hidden { display: none; }
+.tui-policy-modal {
+  width: min(560px, 100%);
+  max-height: min(80vh, 720px);
+  background: var(--sidebar-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 12px 48px rgba(var(--shadow-rgb), 0.4);
+  color: var(--text);
+}
+.tui-policy-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.tui-policy-modal-header h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+}
+.tui-policy-modal-close {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-dimmer);
+  font-size: 20px;
+  cursor: pointer;
+}
+.tui-policy-modal-close:hover {
+  background: rgba(var(--overlay-rgb), 0.05);
+  color: var(--text);
+}
+.tui-policy-modal-body {
+  padding: 16px 18px 20px;
+  overflow-y: auto;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+.tui-policy-modal-body p {
+  margin: 0 0 12px;
+}
+.tui-policy-modal-body ul {
+  margin: 0 0 12px;
+  padding-left: 20px;
+}
+.tui-policy-modal-body li {
+  margin-bottom: 6px;
+}
+.tui-policy-modal-body code {
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: var(--code-bg);
+  color: var(--accent);
+  font-size: 12px;
+  font-family: "Roboto Mono", monospace;
+}
+.tui-policy-modal-body strong {
+  color: var(--text);
+}
+.tui-policy-modal-body h3 {
+  margin: 18px 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+.tui-policy-modal-body ol {
+  margin: 0 0 12px;
+  padding-left: 20px;
+}
+.tui-policy-modal-body ol li {
+  margin-bottom: 6px;
+}
+.tui-policy-modal-body a {
+  color: var(--accent2);
+}
+.tui-policy-modal-body a:hover {
+  text-decoration: underline;
+}
+.tui-policy-modal-links {
+  margin-top: 16px;
+  font-size: 12px;
+  color: var(--text-dimmer);
+}
+
+/* Maintainer note: visually distinct from the technical explanation
+   above so it reads as a personal aside, not just more documentation. */
+.tui-policy-maintainer-note {
+  margin-top: 18px;
+  padding: 14px 16px;
+  border-left: 3px solid var(--accent);
+  background: rgba(var(--overlay-rgb), 0.04);
+  border-radius: 0 8px 8px 0;
+}
+.tui-policy-maintainer-note h3 {
+  margin-top: 0;
+}
+.tui-policy-maintainer-note p {
+  margin-bottom: 10px;
+  color: var(--text-secondary);
+}
+.tui-policy-maintainer-note p:last-of-type {
+  margin-bottom: 0;
+}
+.tui-policy-signature {
+  margin-top: 12px !important;
+  color: var(--text-dimmer) !important;
+  font-style: italic;
+  font-size: 12px;
+}
+
+/* tui-attention.css
+   Banner + modal for "claude TUI session needs your input" notifications.
+   The banner sits at the top of the viewport above any project content;
+   the modal is a centered backdropped overlay that mounts a transient
+   xterm attached to the same PTY. */
+
+.tui-attention-banner {
+  position: fixed;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9000;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 320px;
+  max-width: min(640px, calc(100vw - 24px));
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--sidebar-bg);
+  border: 1px solid var(--border);
+  box-shadow: 0 6px 24px rgba(var(--shadow-rgb), 0.35);
+  font-size: 13px;
+  color: var(--text);
+}
+.tui-attention-banner.hidden { display: none; }
+.tui-attention-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: #50fa7b;
+  color: #000;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Roboto Mono", monospace;
+  flex-shrink: 0;
+}
+.tui-attention-text {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.tui-attention-title {
+  font-weight: 500;
+}
+.tui-attention-message {
+  margin-top: 1px;
+  color: var(--text-muted);
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tui-attention-open {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #000;
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.tui-attention-open:hover { background: var(--accent-hover); }
+.tui-attention-dismiss {
+  padding: 0;
+  width: 22px;
+  height: 22px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-dimmer);
+  font-size: 18px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.tui-attention-dismiss:hover {
+  background: rgba(var(--overlay-rgb), 0.05);
+  color: var(--text);
+}
+
+/* Modal: centered xterm overlay. */
+.tui-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9500;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.tui-modal-backdrop.hidden { display: none; }
+.tui-modal {
+  width: min(960px, 100%);
+  height: min(640px, 100%);
+  background: var(--bg);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.6);
+}
+/* Compact variant for short content (e.g. login wizard): smaller box so the
+   terminal hugs the content instead of leaving a tall empty area below. */
+.tui-modal.tui-modal-compact {
+  width: min(720px, 96%);
+  height: min(480px, 90%);
+}
+.tui-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--sidebar-bg);
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  flex-shrink: 0;
+}
+.tui-modal-title {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* Breadcrumb header: [icon] ProjectName › SessionName */
+.tui-modal-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  min-width: 0;
+  overflow: hidden;
+}
+.tui-modal-project-icon {
+  font-size: 14px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.tui-modal-project-name {
+  color: var(--text-secondary);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+  flex-shrink: 0;
+}
+.tui-modal-sep {
+  color: var(--text-dimmer);
+  flex-shrink: 0;
+}
+.tui-modal-session-name {
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+.tui-modal-close {
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-dimmer);
+  font-size: 18px;
+  cursor: pointer;
+}
+.tui-modal-close:hover {
+  background: rgba(var(--overlay-rgb), 0.05);
+  color: var(--text);
+}
+.tui-modal-body {
+  flex: 1 1 auto;
+  position: relative;
+  overflow: hidden;
+  padding: 4px;
+  background: #000;
+}
+
+/* ============================================================
+   What's New carousel
+   ============================================================ */
+.whats-new-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9600;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  opacity: 0;
+  transition: opacity 160ms ease;
+}
+.whats-new-backdrop.show { opacity: 1; }
+.whats-new-card {
+  position: relative;
+  width: min(440px, 100%);
+  max-height: min(80vh, 640px);
+  background: var(--sidebar-bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 12px 48px rgba(var(--shadow-rgb), 0.4);
+  color: var(--text);
+}
+.whats-new-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: rgba(var(--overlay-rgb), 0.08);
+  color: var(--text-dimmer);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+.whats-new-close:hover {
+  background: rgba(var(--overlay-rgb), 0.15);
+  color: var(--text);
+}
+.whats-new-image-slot {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent2, var(--accent)) 100%);
+  flex-shrink: 0;
+  overflow: hidden;
+  display: block;
+}
+.whats-new-image-slot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.whats-new-image-slot.empty {
+  aspect-ratio: 16 / 6;
+}
+.whats-new-body {
+  padding: 18px 20px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+}
+.whats-new-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-dimmer);
+}
+.whats-new-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--text);
+}
+.whats-new-summary {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+.whats-new-read-more {
+  align-self: flex-start;
+  margin-top: 6px;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  border: none;
+  border-radius: 7px;
+  background: var(--accent);
+  color: var(--accent-contrast, #fff);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+}
+.whats-new-read-more:hover {
+  filter: brightness(1.08);
+}
+.whats-new-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px 14px;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.whats-new-nav.hidden { display: none; }
+.whats-new-prev,
+.whats-new-next {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-dimmer);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.whats-new-prev:hover,
+.whats-new-next:hover {
+  background: rgba(var(--overlay-rgb), 0.08);
+  color: var(--text);
+}
+.whats-new-prev:disabled,
+.whats-new-next:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.whats-new-dots {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.whats-new-dot {
+  width: 7px;
+  height: 7px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--text-dimmer);
+  opacity: 0.35;
+  cursor: pointer;
+  transition: opacity 120ms ease, transform 120ms ease;
+}
+.whats-new-dot.active {
+  opacity: 1;
+  background: var(--accent);
+  transform: scale(1.2);
+}
+
+/* ============================================================
+   Home page "What's New" index (title-only list, blog-style)
+   ============================================================ */
+.hub-whats-new {
+  display: flex;
+  flex-direction: column;
+}
+.hub-whats-new-item {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 10px 4px;
+  border: none;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
+  transition: background 120ms ease;
+  width: 100%;
+}
+.hub-whats-new-item:last-child {
+  border-bottom: none;
+}
+.hub-whats-new-item:hover {
+  background: rgba(var(--overlay-rgb), 0.04);
+}
+.hub-whats-new-item-date {
+  font-size: 11px;
+  color: var(--text-dimmer);
+  flex-shrink: 0;
+  width: 84px;
+  font-variant-numeric: tabular-nums;
+}
+.hub-whats-new-item-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--text);
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* ============================================================
+   Whats New article (blog-style reading view)
+   ============================================================
+   Mirrors #home-hub positioning: absolute inset:0 inside
+   #main-area so the icon strip, top bar, and any other chrome
+   outside #main-area stay visible. Sidebar-column (inside
+   main-area) is covered, same as home-hub. */
+#whats-new-article {
+  position: absolute;
+  inset: 0;
+  z-index: 210;
+  background: var(--bg);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  border-top-left-radius: 8px;
+}
+#whats-new-article.hidden { display: none; }
+.wna-toolbar {
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  z-index: 1;
+}
+.wna-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 13px;
+  cursor: pointer;
+}
+.wna-back:hover {
+  background: rgba(var(--overlay-rgb), 0.06);
+  color: var(--text);
+}
+.wna-content {
+  width: 100%;
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 56px 32px 96px;
+  box-sizing: border-box;
+}
+.wna-date {
+  font-size: 12px;
+  color: var(--text-dimmer);
+  letter-spacing: 0.04em;
+  margin-bottom: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.wna-title {
+  margin: 0 0 32px;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+.wna-body {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text);
+}
+.wna-body p {
+  margin: 0 0 18px;
+}
+.wna-body p:last-child { margin-bottom: 0; }
+.wna-body h3 {
+  margin: 36px 0 12px;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.005em;
+}
+.wna-body ul, .wna-body ol {
+  margin: 0 0 18px;
+  padding-left: 22px;
+}
+.wna-body li {
+  margin-bottom: 8px;
+}
+.wna-body code {
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--code-bg);
+  color: var(--accent);
+  font-size: 13px;
+  font-family: "Roboto Mono", monospace;
+}
+.wna-body strong { color: var(--text); font-weight: 600; }
+.wna-body em { color: var(--text-secondary); }
+.wna-body a { color: var(--accent2); }
+.wna-body a:hover { text-decoration: underline; }
+@media (max-width: 640px) {
+  .wna-content { padding: 32px 20px 80px; }
+  .wna-title { font-size: 26px; }
+}
