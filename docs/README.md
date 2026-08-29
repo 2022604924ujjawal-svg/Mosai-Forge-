@@ -3,7 +3,7 @@
 Mosai Forge provides a focused workspace for managing projects, sessions, AI workers, tools, and ongoing tasks from one place.
 
 <p align="center">
-  <img src="../lib/public/task.png" width="100%" alt="Mosai Forge dashboard" />
+  <img src="lib/public/Screenshot 2026-08-29 213548.png" width="100%" alt="Mosai Forge dashboard" />
 </p>
 
 <h2 align="center">Where minds work together.</h2>
