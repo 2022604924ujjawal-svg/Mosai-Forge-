@@ -1,3 +1,5 @@
+<h1 align="center"><strong>Mosai Forge</strong></h1>
+
 <p align="center">
   <img src="../lib/public/Screenshot%202026-08-29%20213548.png" width="900" alt="Mosai Forge Dashboard" />
 </p>
