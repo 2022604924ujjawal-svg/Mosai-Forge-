@@ -1,6 +1,5 @@
 <p align="center">
-  
-  <img src="lib/public/ujju.png" width="280" alt="Mosai Forge " />
+  <img src="lib/public/ujju.png" width="250" alt="Mosai Forge" />
 </p>
 
 <h2 align="center">Where minds work together.</h2>
